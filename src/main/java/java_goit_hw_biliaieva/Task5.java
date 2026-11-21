@@ -1,8 +1,11 @@
 package java_goit_hw_biliaieva;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class Task5 {
     public static void main(String[] args) {
@@ -13,16 +16,40 @@ public class Task5 {
     }
 
     public static <T> Stream<T> zip(Stream<T> first, Stream<T> second) {
-        List<T> firstList = first.toList();
-        List<T> secondList = second.toList();
-        List<T> result = new ArrayList<>();
+        Iterator<T> firstIterator = first.iterator();
+        Iterator<T> secondIterator = second.iterator();
+        Iterator<T> zippedIterator = new Iterator<>() {
+            private boolean firstTurn = true;
 
-        int count = Math.min(firstList.size(), secondList.size());
-        for (int i = 0; i < count; i++) {
-            result.add(firstList.get(i));
-            result.add(secondList.get(i));
-        }
+            @Override
+            public boolean hasNext() {
+                return firstTurn
+                        ? firstIterator.hasNext() && secondIterator.hasNext()
+                        : secondIterator.hasNext() && firstIterator.hasNext();
+            }
 
-        return result.stream();
+            @Override
+            public T next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+
+                if (firstTurn) {
+                    firstTurn = false;
+                    return firstIterator.next();
+                }
+
+                firstTurn = true;
+                return secondIterator.next();
+            }
+        };
+
+        Spliterator<T> spliterator =
+                Spliterators.spliteratorUnknownSize(zippedIterator, Spliterator.ORDERED);
+        return StreamSupport.stream(spliterator, false)
+                .onClose(() -> {
+                    first.close();
+                    second.close();
+                });
     }
 }

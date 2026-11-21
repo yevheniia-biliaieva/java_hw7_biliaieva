@@ -1,6 +1,8 @@
 package java_goit_hw_biliaieva;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Task1 {
     public static void main(String[] args) {
@@ -9,15 +11,9 @@ public class Task1 {
     }
 
     public static String getOddNames(List<String> names) {
-        String result = "";
-
-        for (int i = 0; i < names.size(); i += 2) {
-            if (!result.isEmpty()) {
-                result += ", ";
-            }
-            result += (i + 1) + ". " + names.get(i);
-        }
-
-        return result;
+        return IntStream.range(0, names.size())
+                .filter(index -> index % 2 == 0)
+                .mapToObj(index -> (index + 1) + ". " + names.get(index))
+                .collect(Collectors.joining(", "));
     }
 }

@@ -11,10 +11,9 @@ public class Task2 {
     }
 
     public static List<String> getUpperCaseSorted(List<String> names) {
-        List<String> result = names.stream()
+        return names.stream()
                 .map(String::toUpperCase)
                 .sorted(Comparator.reverseOrder())
                 .collect(Collectors.toList());
-        return result;
     }
 }

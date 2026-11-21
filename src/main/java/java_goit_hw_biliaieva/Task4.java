@@ -1,5 +1,6 @@
 package java_goit_hw_biliaieva;
 
+import java.math.BigInteger;
 import java.util.stream.Stream;
 
 public class Task4 {
@@ -14,12 +15,14 @@ public class Task4 {
             throw new IllegalArgumentException("m must be positive");
         }
         long seed = 0;
+        BigInteger bigA = BigInteger.valueOf(a);
+        BigInteger bigC = BigInteger.valueOf(c);
+        BigInteger bigM = BigInteger.valueOf(m);
         return Stream.iterate(seed, x -> {
-            long next = (a * x + c) % m;
-            if (next < 0) {
-                next += m;
-            }
-            return next;
+            return bigA.multiply(BigInteger.valueOf(x))
+                    .add(bigC)
+                    .mod(bigM)
+                    .longValue();
         });
     }
 }
